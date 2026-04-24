@@ -17,11 +17,12 @@ O projeto adota uma estrutura limpa, separando o código de produção do códig
 ```text
 agendamentos/
 ├── api/
-│   ├── agendamento.py      # Domínio rico e contratos (Médico, Agendamento)
+│   └── agendamento.py      # Domínio rico e contratos (Médico, Agendamento)
 ├── tests/
 │   └── test_agendamento.py # Suíte de testes unitários (Cenários de Aceitação)
-├── .gitignore               
-├── requirements.txt               
+├── main.py                 # Script de demonstração do sistema (MVP)
+├── .gitignore
+├── requirements.txt
 └── README.md
 ```
 
