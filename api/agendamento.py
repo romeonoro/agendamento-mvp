@@ -1,10 +1,5 @@
 from datetime import datetime, time, timedelta
-
-class ForaDoHorarioError(Exception):
-    pass
-
-class ConflitoHorarioError(Exception):
-    pass
+from api.exceptions import ForaDoHorarioError, ConflitoHorarioError
 
 class Agendamento:
     def __init__(self, paciente_id: int, inicio: datetime, duracao_minutos: int = 30):

@@ -1,6 +1,7 @@
 import unittest
 from datetime import datetime, time 
-from api.agendamento import Medico, ForaDoHorarioError, ConflitoHorarioError
+from api.agendamento import Medico
+from api.exceptions import ForaDoHorarioError, ConflitoHorarioError
 
 class TestAgendamento(unittest.TestCase):
 

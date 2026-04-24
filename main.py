@@ -1,5 +1,6 @@
 from datetime import datetime, time
-from api.agendamento import Medico, ForaDoHorarioError, ConflitoHorarioError
+from api.agendamento import Medico
+from api.exceptions import ForaDoHorarioError, ConflitoHorarioError
 
 def simular_dia_na_clinica():
     print("=== INICIANDO SISTEMA DE AGENDAMENTOS ===\n")

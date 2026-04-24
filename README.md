@@ -17,7 +17,8 @@ O projeto adota uma estrutura limpa, separando o código de produção do códig
 ```text
 agendamentos/
 ├── api/
-│   └── agendamento.py      # Domínio rico e contratos (Médico, Agendamento)
+│   ├── agendamento.py      # Domínio rico e contratos (Médico, Agendamento)
+│   └── exceptions.py       # Exceções de domínio
 ├── tests/
 │   └── test_agendamento.py # Suíte de testes unitários (Cenários de Aceitação)
 ├── main.py                 # Script de demonstração do sistema (MVP)
