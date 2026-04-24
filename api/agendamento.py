@@ -1,5 +1,8 @@
 from datetime import datetime, time, timedelta
 
+class ForaDoHorarioError(Exception):
+    pass
+
 class Agendamento:
     def __init__(self, paciente_id: int, inicio: datetime, duracao_minutos: int = 30):
         self._paciente_id = paciente_id
@@ -9,7 +12,10 @@ class Agendamento:
     @property
     def inicio(self) -> datetime:
         return self._inicio
-        
+    @property
+    def fim(self) -> datetime:
+        return self._inicio + self._duracao
+
     @property
     def paciente_id(self) -> int:
         return self._paciente_id
@@ -26,10 +32,20 @@ class Medico:
     def agendamentos(self) -> tuple:
         return tuple(self._agendamentos)
 
+    def _esta_no_horario_de_trabalho(self, agendamento: Agendamento) -> bool:
+        return (self._inicio_turno <= agendamento.inicio.time() and 
+                agendamento.fim.time() <= self._fim_turno)
+
     def agendar(self, paciente_id: int, data_hora: datetime) -> None:
         novo_agendamento = Agendamento(
             paciente_id=paciente_id, 
             inicio=data_hora, 
             duracao_minutos=self._intervalo_atendimento
         )
+
+        if not self._esta_no_horario_de_trabalho(novo_agendamento):
+            raise ForaDoHorarioError("Médico não está disponível neste horário.")
+            
         self._agendamentos.append(novo_agendamento)
+
+    

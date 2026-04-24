@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime, time 
-from api.agendamento import Medico
+from api.agendamento import Medico, ForaDoHorarioError
 
 class TestAgendamento(unittest.TestCase):
 
@@ -19,3 +19,12 @@ class TestAgendamento(unittest.TestCase):
         agendamento_criado = medico.agendamentos[0]
         self.assertEqual(agendamento_criado.inicio, horario_desejado)
         self.assertEqual(agendamento_criado.paciente_id, paciente_id)
+
+    def test_erro_agendamento_fora_do_horario(self):
+        medico = Medico(nome="Dr. House", inicio_turno=time(8, 0), fim_turno=time(12, 0), intervalo_atendimento=30)
+
+        horario_desejado = datetime(2026, 4, 25, 14, 0)
+        paciente_id = 123
+        
+        with self.assertRaisesRegex(ForaDoHorarioError, "Médico não está disponível neste horário"):
+            medico.agendar(paciente_id=paciente_id, data_hora=horario_desejado)
