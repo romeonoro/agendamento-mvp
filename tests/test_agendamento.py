@@ -1,6 +1,6 @@
 import unittest
 from datetime import datetime, time 
-from api.agendamento import Medico, ForaDoHorarioError
+from api.agendamento import Medico, ForaDoHorarioError, ConflitoHorarioError
 
 class TestAgendamento(unittest.TestCase):
 
@@ -28,3 +28,15 @@ class TestAgendamento(unittest.TestCase):
         
         with self.assertRaisesRegex(ForaDoHorarioError, "Médico não está disponível neste horário"):
             medico.agendar(paciente_id=paciente_id, data_hora=horario_desejado)
+
+    def test_erro_conflito_de_horario(self):
+        medico = Medico(nome="Dr. House", inicio_turno=time(8, 0), fim_turno=time(12, 0), intervalo_atendimento=30)
+        horario_existente = datetime(2026, 4, 25, 10, 0)
+        
+        medico.agendar(paciente_id=123, data_hora=horario_existente)
+        
+        horario_conflitante = datetime(2026, 4, 25, 10, 0)
+        paciente_id_2 = 456
+        
+        with self.assertRaisesRegex(ConflitoHorarioError, "Conflito de Horário"):
+            medico.agendar(paciente_id=paciente_id_2, data_hora=horario_conflitante)

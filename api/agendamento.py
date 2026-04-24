@@ -3,6 +3,9 @@ from datetime import datetime, time, timedelta
 class ForaDoHorarioError(Exception):
     pass
 
+class ConflitoHorarioError(Exception):
+    pass
+
 class Agendamento:
     def __init__(self, paciente_id: int, inicio: datetime, duracao_minutos: int = 30):
         self._paciente_id = paciente_id
@@ -36,15 +39,25 @@ class Medico:
         return (self._inicio_turno <= agendamento.inicio.time() and 
                 agendamento.fim.time() <= self._fim_turno)
 
+    def _existe_conflito(self, novo_agendamento: Agendamento) -> bool:
+        for agendamento_existente in self._agendamentos:
+            if (novo_agendamento.inicio < agendamento_existente.fim and 
+                novo_agendamento.fim > agendamento_existente.inicio):
+                return True
+        return False
+
     def agendar(self, paciente_id: int, data_hora: datetime) -> None:
         novo_agendamento = Agendamento(
             paciente_id=paciente_id, 
             inicio=data_hora, 
             duracao_minutos=self._intervalo_atendimento
         )
-
+        
         if not self._esta_no_horario_de_trabalho(novo_agendamento):
             raise ForaDoHorarioError("Médico não está disponível neste horário.")
+            
+        if self._existe_conflito(novo_agendamento):
+            raise ConflitoHorarioError("Conflito de Horário.")
             
         self._agendamentos.append(novo_agendamento)
 
