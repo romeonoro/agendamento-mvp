@@ -1,5 +1,5 @@
 from datetime import datetime, time, timedelta
-from api.exceptions import ForaDoHorarioError, ConflitoHorarioError
+from api.exceptions import ForaDoHorarioError, ConflitoHorarioError, IntervaloInvalidoError
 
 class Agendamento:
     def __init__(self, paciente_id: int, inicio: datetime, duracao_minutos: int = 30):
@@ -41,6 +41,9 @@ class Medico:
                 return True
         return False
 
+    def _respeita_grade_de_intervalo(self, data_hora: datetime) -> bool:
+        return data_hora.minute % self._intervalo_atendimento == 0
+
     def agendar(self, paciente_id: int, data_hora: datetime) -> None:
         novo_agendamento = Agendamento(
             paciente_id=paciente_id, 
@@ -53,6 +56,9 @@ class Medico:
             
         if self._existe_conflito(novo_agendamento):
             raise ConflitoHorarioError("Conflito de Horário.")
+
+        if not self._respeita_grade_de_intervalo(data_hora):
+            raise IntervaloInvalidoError(f"O horário deve ser em blocos de {self._intervalo_atendimento} minutos.")
             
         self._agendamentos.append(novo_agendamento)
 

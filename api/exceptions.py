@@ -5,3 +5,7 @@ class ForaDoHorarioError(Exception):
 class ConflitoHorarioError(Exception):
     """Lançada quando já existe uma consulta no mesmo horário."""
     pass
+
+class IntervaloInvalidoError(Exception):
+    """Lançada quando o horário não obedece à grade de intervalos da clínica."""
+    pass

@@ -1,7 +1,7 @@
 import unittest
 from datetime import datetime, time 
 from api.agendamento import Medico
-from api.exceptions import ForaDoHorarioError, ConflitoHorarioError
+from api.exceptions import ForaDoHorarioError, ConflitoHorarioError, IntervaloInvalidoError
 
 class TestAgendamento(unittest.TestCase):
 
@@ -41,3 +41,19 @@ class TestAgendamento(unittest.TestCase):
         
         with self.assertRaisesRegex(ConflitoHorarioError, "Conflito de Horário"):
             medico.agendar(paciente_id=paciente_id_2, data_hora=horario_conflitante)
+
+    def test_deve_bloquear_consulta_que_termina_apos_fim_do_turno(self):
+        medico = Medico(nome="Dr. House", inicio_turno=time(8, 0), fim_turno=time(12, 0))
+        horario_limite = datetime(2026, 4, 25, 11, 45)
+        
+        with self.assertRaises(ForaDoHorarioError):
+            medico.agendar(paciente_id=888, data_hora=horario_limite)
+
+            
+    def test_deve_bloquear_horario_quebrado_fora_do_intervalo(self):
+        medico = Medico(nome="Dr. House", inicio_turno=time(8, 0), fim_turno=time(12, 0), intervalo_atendimento=30)
+        
+        horario_quebrado = datetime(2026, 4, 25, 10, 7)
+        
+        with self.assertRaises(IntervaloInvalidoError):
+            medico.agendar(paciente_id=123, data_hora=horario_quebrado)
