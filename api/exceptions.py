@@ -11,3 +11,9 @@ class ConflitoHorarioError(Exception):
 class IntervaloInvalidoError(Exception):
     def __init__(self, message="O horário deve respeitar a grade de intervalos."):
         super().__init__(message)
+
+
+class AgendamentoNaoEncontradoError(Exception):
+    def __init__(self, paciente_id: int):
+        mensagem = f"Nenhuma consulta encontrada para o Paciente {paciente_id}."
+        super().__init__(mensagem)

@@ -53,10 +53,16 @@ Como o foco atual é o Core Domain, a aplicação roda via terminal para demonst
    ```bash
    python main.py
    ```
-3. **Para rodar a suíte de testes unitários** e verificar as regras de negócio:
-   ```bash
-   python -m unittest discover tests
-   ```
+
+## 🧪 Como Rodar os Testes
+
+O projeto conta com uma suíte automatizada que garante o funcionamento dos contratos e da persistência. Os testes estão divididos para respeitar as fronteiras da arquitetura (`test_agendamento.py` para o domínio e `test_repository.py` para a infraestrutura).
+
+Para buscar e rodar todos os testes simultaneamente, utilize o comando de *discover* do Python:
+
+```bash
+python -m unittest discover tests
+```
 
 ## 🛠️ Como Contribuir
 
@@ -90,4 +96,4 @@ Esta seção detalha as evoluções arquiteturais feitas neste MVP para facilita
 
 ### 4. Tipagem Estática (Type Hinting)
 * **Decisão**: Uso rigoroso de tipos em todos os métodos e atributos.
-* **Porquê**: Melhora a legibilidade e previne erros comuns de passagem de parâmetros durante o desenvolvimento e integração com o Repositório.
+* **Porquê**: Melhora a legibilidade e previne erros comuns de passagem de parâmetros durante o desenvolvimento e integração com o Repositório.

@@ -1,4 +1,5 @@
 from api.agendamento import Agendamento
+from api.exceptions import AgendamentoNaoEncontradoError
 
 
 class AgendamentoRepositorio:
@@ -10,3 +11,11 @@ class AgendamentoRepositorio:
 
     def buscar_todos(self) -> list[Agendamento]:
         return list(self._agendamentos)
+
+    def remover(self, paciente_id: int) -> None:
+        for consulta in self._agendamentos:
+            if consulta.paciente_id == paciente_id:
+                self._agendamentos.remove(consulta)
+                return
+
+        raise AgendamentoNaoEncontradoError(paciente_id)

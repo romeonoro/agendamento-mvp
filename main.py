@@ -2,6 +2,7 @@ from datetime import datetime, time
 
 from api.agendamento import Medico
 from api.exceptions import (
+    AgendamentoNaoEncontradoError,
     ConflitoHorarioError,
     ForaDoHorarioError,
     IntervaloInvalidoError,
@@ -10,9 +11,8 @@ from infra.repository import AgendamentoRepositorio
 
 
 def simular_dia_na_clinica():
-    print("=== INICIANDO SISTEMA DE AGENDAMENTOS (COM REPOSITÓRIO) ===\n")
+    print("=== INICIANDO SISTEMA DE AGENDAMENTOS ===\n")
 
-    # 1. Instancia as dependências
     repo = AgendamentoRepositorio()
     dr_house = Medico(
         nome="Dr. House",
@@ -24,7 +24,6 @@ def simular_dia_na_clinica():
     print(f"👨‍⚕️ Médico cadastrado: {dr_house._nome}")
     print("⏰ Turno: 08:00 às 12:00 (Consultas de 30 min)\n")
 
-    # 2. Função Orquestradora
     def tentar_agendar(paciente_id: int, data_hora: datetime):
         hora_str = data_hora.strftime("%H:%M")
         print(f"Tentando agendar Paciente ID {paciente_id} para {hora_str}...")
@@ -44,14 +43,33 @@ def simular_dia_na_clinica():
         except Exception as e:
             print(f"❌ Erro Inesperado: {e}\n")
 
-    # 3. Executando os Cenários
+    def tentar_cancelar(paciente_id: int):
+        print(f"Tentando cancelar a consulta do Paciente ID {paciente_id}...")
+        try:
+            repo.remover(paciente_id)
+            print("✅ Sucesso: Consulta cancelada com sucesso!\n")
+        except AgendamentoNaoEncontradoError as e:
+            print(f"❌ Erro ao cancelar: {e}\n")
+
+    # --- Executando os Cenários da Simulação ---
+
+    # 1. Agendando com sucesso
     tentar_agendar(paciente_id=101, data_hora=datetime(2026, 4, 25, 9, 0))
-    tentar_agendar(paciente_id=102, data_hora=datetime(2026, 4, 25, 14, 0))
-    tentar_agendar(paciente_id=103, data_hora=datetime(2026, 4, 25, 9, 15))
+    tentar_agendar(paciente_id=103, data_hora=datetime(2026, 4, 25, 9, 30))
+
+    # 2. Conflito proposital
     tentar_agendar(paciente_id=104, data_hora=datetime(2026, 4, 25, 9, 0))
 
-    # 4. Exibindo o estado final do Repositório
-    print("=== AGENDA FINAL NO REPOSITÓRIO ===")
+    # 3. Cancelando uma consulta existente
+    tentar_cancelar(paciente_id=101)
+
+    # 4. Agendando no horário que acabou de vagar
+    tentar_agendar(paciente_id=999, data_hora=datetime(2026, 4, 25, 9, 0))
+
+    # 5. Tentando cancelar alguém que não existe
+    tentar_cancelar(paciente_id=888)
+
+    print("=== AGENDA FINAL ===")
     consultas_salvas = repo.buscar_todos()
 
     if not consultas_salvas:
