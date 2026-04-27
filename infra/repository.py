@@ -1,5 +1,6 @@
 from api.agendamento import Agendamento
 
+
 class AgendamentoRepositorio:
     def __init__(self):
         self._agendamentos: list[Agendamento] = []

@@ -1,5 +1,11 @@
 from datetime import datetime, time
-from api.exceptions import ForaDoHorarioError, ConflitoHorarioError, IntervaloInvalidoError
+
+from api.exceptions import (
+    ConflitoHorarioError,
+    ForaDoHorarioError,
+    IntervaloInvalidoError,
+)
+
 
 class Agendamento:
     def __init__(self, paciente_id: int, inicio: datetime, duracao_minutos: int):
@@ -18,35 +24,53 @@ class Agendamento:
     @property
     def fim(self) -> datetime:
         from datetime import timedelta
+
         return self._inicio + timedelta(minutes=self._duracao_minutos)
 
 
 class Medico:
-    def __init__(self, nome: str, inicio_turno: time, fim_turno: time, intervalo_atendimento: int = 30):
+    def __init__(
+        self,
+        nome: str,
+        inicio_turno: time,
+        fim_turno: time,
+        intervalo_atendimento: int = 30,
+    ):
         self._nome = nome
         self._inicio_turno = inicio_turno
         self._fim_turno = fim_turno
         self._intervalo_atendimento = intervalo_atendimento
 
     def _esta_no_horario_de_trabalho(self, agendamento: Agendamento) -> bool:
-        return (self._inicio_turno <= agendamento.inicio.time() and 
-                agendamento.fim.time() <= self._fim_turno)
+        return (
+            self._inicio_turno <= agendamento.inicio.time()
+            and agendamento.fim.time() <= self._fim_turno
+        )
 
-    def _existe_conflito(self, novo: Agendamento, existentes: list[Agendamento]) -> bool:
+    def _existe_conflito(
+        self, novo: Agendamento, existentes: list[Agendamento]
+    ) -> bool:
         for existente in existentes:
-            if (novo.inicio < existente.fim and novo.fim > existente.inicio):
+            if novo.inicio < existente.fim and novo.fim > existente.inicio:
                 return True
         return False
 
     def _respeita_grade_de_intervalo(self, data_hora: datetime) -> bool:
         return data_hora.minute % self._intervalo_atendimento == 0
 
-    def agendar(self, paciente_id: int, data_hora: datetime, agendamentos_existentes: list[Agendamento]) -> Agendamento:
-        
+    def agendar(
+        self,
+        paciente_id: int,
+        data_hora: datetime,
+        agendamentos_existentes: list[Agendamento],
+    ) -> Agendamento:
+
         if not self._respeita_grade_de_intervalo(data_hora):
             raise IntervaloInvalidoError()
 
-        novo_agendamento = Agendamento(paciente_id, data_hora, self._intervalo_atendimento)
+        novo_agendamento = Agendamento(
+            paciente_id, data_hora, self._intervalo_atendimento
+        )
 
         if not self._esta_no_horario_de_trabalho(novo_agendamento):
             raise ForaDoHorarioError()
